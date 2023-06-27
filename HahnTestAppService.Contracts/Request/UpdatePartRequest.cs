@@ -12,6 +12,7 @@ namespace HahnTestAppService.Contracts.Request
         public DateTime? ValidTill { get; set; }
         public int ManufacturerId { get; set; }
         public int TotalQuantity { get; set; }
+        public int ReservedQuantity { get; set; }
         public int PartTypeId { get; set; }
         public List<BrandModel> Brands { get; set; }
     }

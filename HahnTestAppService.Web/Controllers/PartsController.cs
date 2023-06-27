@@ -27,9 +27,15 @@ namespace HahnTestAppService.Web.Controllers
             return Ok(await _partsService.GetPart(id,CancellationToken.None));
         }
         [HttpPost]
-        public async Task<ActionResult> Add(UpdatePartRequest request)
+        public async Task<ActionResult> Add(AddPartRequest request)
         {
             await _partsService.Add(request);
+            return Ok();
+        }
+        [HttpPut]
+        public async Task<ActionResult> Update(UpdatePartRequest request)
+        {
+            await _partsService.Update(request);
             return Ok();
         }
     }

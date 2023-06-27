@@ -12,7 +12,7 @@ namespace HahnTestAppService.Services.Interfaces
     {
         Task<List<GetPartResponse>> GetParts(CancellationToken token); 
         Task<GetPartResponse> GetPart(int id, CancellationToken token); 
-        Task Add(UpdatePartRequest part); 
+        Task Add(AddPartRequest part); 
         Task Delete(int id); 
         Task Update(UpdatePartRequest part); 
         Task ReservePart(ReservePartRequest part); 

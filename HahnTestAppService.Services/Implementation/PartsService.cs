@@ -15,7 +15,7 @@ namespace HahnTestAppService.Services.Implementation
             _partsRepo = partsRepo;
         }
 
-        public async Task Add(UpdatePartRequest part)
+        public async Task Add(AddPartRequest part)
         {
             var partDb = new CarPart()
             {
@@ -25,7 +25,6 @@ namespace HahnTestAppService.Services.Implementation
                 MadeOn = part.MadeOn,
                 ValidTill = part.MadeOn.AddYears(10),
                 ManufacturerId = part.ManufacturerId,
-                ReservedQuantity = part.ReservedQuantity,
                 TotalQuantity = part.TotalQuantity,
                 PartTypeId = part.PartTypeId
             };
