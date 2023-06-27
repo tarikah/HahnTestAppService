@@ -1,16 +1,18 @@
-﻿namespace HahnTestAppService.Contracts.Request
+﻿using HahnTestAppService.Contracts.DTOs;
+
+namespace HahnTestAppService.Contracts.Request
 {
-    public class AddUpdatePartRequest
+    public class UpdatePartRequest
     {
         public int? Id{ get; set; }
         public string Name { get; set; }
         public string Composition { get; set; }
-        public int SerialNumber { get; set; }
+        public string SerialNumber { get; set; }
         public DateTime MadeOn { get; set; } = DateTime.Now;
         public DateTime? ValidTill { get; set; }
         public int ManufacturerId { get; set; }
-        public int AvailableQuantity { get; set; }
-        public int ReservedQuantity { get; set; } = 0;
         public int TotalQuantity { get; set; }
+        public int PartTypeId { get; set; }
+        public List<BrandModel> Brands { get; set; }
     }
 }

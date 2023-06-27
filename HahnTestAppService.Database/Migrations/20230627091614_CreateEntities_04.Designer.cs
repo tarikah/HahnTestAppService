@@ -4,6 +4,7 @@ using HahnTestAppService.Repository.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HahnTestAppService.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230627091614_CreateEntities_04")]
+    partial class CreateEntities_04
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,12 @@ namespace HahnTestAppService.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PartId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PartId");
 
                     b.ToTable("Brands");
                 });
@@ -70,9 +78,8 @@ namespace HahnTestAppService.Repository.Migrations
                     b.Property<int>("ReservedQuantity")
                         .HasColumnType("int");
 
-                    b.Property<string>("SerialNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("SerialNumber")
+                        .HasColumnType("int");
 
                     b.Property<int>("TotalQuantity")
                         .HasColumnType("int");
@@ -82,9 +89,11 @@ namespace HahnTestAppService.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ManufacturerId");
+                    b.HasIndex("ManufacturerId")
+                        .IsUnique();
 
-                    b.HasIndex("PartTypeId");
+                    b.HasIndex("PartTypeId")
+                        .IsUnique();
 
                     b.ToTable("Parts");
                 });
@@ -106,21 +115,6 @@ namespace HahnTestAppService.Repository.Migrations
                     b.ToTable("Manufacturers");
                 });
 
-            modelBuilder.Entity("HahnTestAppService.Domain.Entities.PartBrand", b =>
-                {
-                    b.Property<int>("PartId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BrandId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PartId", "BrandId");
-
-                    b.HasIndex("BrandId");
-
-                    b.ToTable("PartBrands");
-                });
-
             modelBuilder.Entity("HahnTestAppService.Domain.Entities.PartType", b =>
                 {
                     b.Property<int>("Id")
@@ -138,17 +132,26 @@ namespace HahnTestAppService.Repository.Migrations
                     b.ToTable("PartTypes");
                 });
 
+            modelBuilder.Entity("HahnTestAppService.Domain.Entities.Brand", b =>
+                {
+                    b.HasOne("HahnTestAppService.Domain.Entities.CarPart", "Part")
+                        .WithMany("Brands")
+                        .HasForeignKey("PartId");
+
+                    b.Navigation("Part");
+                });
+
             modelBuilder.Entity("HahnTestAppService.Domain.Entities.CarPart", b =>
                 {
                     b.HasOne("HahnTestAppService.Domain.Entities.Manufacturer", "Manufacturer")
-                        .WithMany("Part")
-                        .HasForeignKey("ManufacturerId")
+                        .WithOne("Part")
+                        .HasForeignKey("HahnTestAppService.Domain.Entities.CarPart", "ManufacturerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("HahnTestAppService.Domain.Entities.PartType", "PartType")
-                        .WithMany("Parts")
-                        .HasForeignKey("PartTypeId")
+                        .WithOne("Part")
+                        .HasForeignKey("HahnTestAppService.Domain.Entities.CarPart", "PartTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -157,43 +160,21 @@ namespace HahnTestAppService.Repository.Migrations
                     b.Navigation("PartType");
                 });
 
-            modelBuilder.Entity("HahnTestAppService.Domain.Entities.PartBrand", b =>
-                {
-                    b.HasOne("HahnTestAppService.Domain.Entities.Brand", "Brand")
-                        .WithMany("partBrands")
-                        .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HahnTestAppService.Domain.Entities.CarPart", "Part")
-                        .WithMany("partBrands")
-                        .HasForeignKey("PartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Brand");
-
-                    b.Navigation("Part");
-                });
-
-            modelBuilder.Entity("HahnTestAppService.Domain.Entities.Brand", b =>
-                {
-                    b.Navigation("partBrands");
-                });
-
             modelBuilder.Entity("HahnTestAppService.Domain.Entities.CarPart", b =>
                 {
-                    b.Navigation("partBrands");
+                    b.Navigation("Brands");
                 });
 
             modelBuilder.Entity("HahnTestAppService.Domain.Entities.Manufacturer", b =>
                 {
-                    b.Navigation("Part");
+                    b.Navigation("Part")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HahnTestAppService.Domain.Entities.PartType", b =>
                 {
-                    b.Navigation("Parts");
+                    b.Navigation("Part")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

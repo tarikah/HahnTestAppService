@@ -8,7 +8,7 @@ namespace HahnTestAppService.Repository.Concretes
 {
     public class ManufacturerRepository : BaseRepository<ApplicationDbContext>, IManufacturerRepository
     {
-        protected ManufacturerRepository(ApplicationDbContext dbContext, IUnitOfWork unitOfWork = null) : base(dbContext, unitOfWork)
+        public ManufacturerRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
 

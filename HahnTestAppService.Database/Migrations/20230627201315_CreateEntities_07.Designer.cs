@@ -4,6 +4,7 @@ using HahnTestAppService.Repository.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HahnTestAppService.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230627201315_CreateEntities_07")]
+    partial class CreateEntities_07
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,12 @@ namespace HahnTestAppService.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PartId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PartId");
 
                     b.ToTable("Brands");
                 });
@@ -106,21 +114,6 @@ namespace HahnTestAppService.Repository.Migrations
                     b.ToTable("Manufacturers");
                 });
 
-            modelBuilder.Entity("HahnTestAppService.Domain.Entities.PartBrand", b =>
-                {
-                    b.Property<int>("PartId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BrandId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PartId", "BrandId");
-
-                    b.HasIndex("BrandId");
-
-                    b.ToTable("PartBrands");
-                });
-
             modelBuilder.Entity("HahnTestAppService.Domain.Entities.PartType", b =>
                 {
                     b.Property<int>("Id")
@@ -136,6 +129,15 @@ namespace HahnTestAppService.Repository.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PartTypes");
+                });
+
+            modelBuilder.Entity("HahnTestAppService.Domain.Entities.Brand", b =>
+                {
+                    b.HasOne("HahnTestAppService.Domain.Entities.CarPart", "Part")
+                        .WithMany("Brands")
+                        .HasForeignKey("PartId");
+
+                    b.Navigation("Part");
                 });
 
             modelBuilder.Entity("HahnTestAppService.Domain.Entities.CarPart", b =>
@@ -157,33 +159,9 @@ namespace HahnTestAppService.Repository.Migrations
                     b.Navigation("PartType");
                 });
 
-            modelBuilder.Entity("HahnTestAppService.Domain.Entities.PartBrand", b =>
-                {
-                    b.HasOne("HahnTestAppService.Domain.Entities.Brand", "Brand")
-                        .WithMany("partBrands")
-                        .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HahnTestAppService.Domain.Entities.CarPart", "Part")
-                        .WithMany("partBrands")
-                        .HasForeignKey("PartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Brand");
-
-                    b.Navigation("Part");
-                });
-
-            modelBuilder.Entity("HahnTestAppService.Domain.Entities.Brand", b =>
-                {
-                    b.Navigation("partBrands");
-                });
-
             modelBuilder.Entity("HahnTestAppService.Domain.Entities.CarPart", b =>
                 {
-                    b.Navigation("partBrands");
+                    b.Navigation("Brands");
                 });
 
             modelBuilder.Entity("HahnTestAppService.Domain.Entities.Manufacturer", b =>

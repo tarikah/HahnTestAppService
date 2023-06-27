@@ -1,4 +1,5 @@
-﻿using HahnTestAppService.Contracts.Response;
+﻿using HahnTestAppService.Contracts.Request;
+using HahnTestAppService.Contracts.Response;
 using HahnTestAppService.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +17,20 @@ namespace HahnTestAppService.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<List<GetPartResponse>> Get()
+        public async Task<ActionResult<List<GetPartResponse>>> Get()
         {
-            return await _partsService.GetParts(CancellationToken.None);
+            return Ok(await _partsService.GetParts(CancellationToken.None));
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<GetPartResponse>> Get(int id)
+        {
+            return Ok(await _partsService.GetPart(id,CancellationToken.None));
+        }
+        [HttpPost]
+        public async Task<ActionResult> Add(UpdatePartRequest request)
+        {
+            await _partsService.Add(request);
+            return Ok();
         }
     }
 }

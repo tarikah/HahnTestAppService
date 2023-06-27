@@ -13,7 +13,7 @@ namespace HahnTestAppService.Repository.Concretes
 {
     public class BrandRepository : BaseRepository<ApplicationDbContext>, IBrandsRepository
     {
-        protected BrandRepository(ApplicationDbContext dbContext, IUnitOfWork unitOfWork = null) : base(dbContext, unitOfWork)
+        public BrandRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
 

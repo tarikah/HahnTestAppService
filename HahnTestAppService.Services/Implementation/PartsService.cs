@@ -10,15 +10,12 @@ namespace HahnTestAppService.Services.Implementation
     public class PartsService : IPartsService
     {
         private readonly IPartsRepository _partsRepo;
-        private readonly IBrandsRepository _brandsRepo;
-
-        public PartsService(IPartsRepository partsRepo, IBrandsRepository brandsRepo)
+        public PartsService(IPartsRepository partsRepo)
         {
             _partsRepo = partsRepo;
-            _brandsRepo = brandsRepo;
         }
 
-        public async Task Add(AddUpdatePartRequest part)
+        public async Task Add(UpdatePartRequest part)
         {
             var partDb = new CarPart()
             {
@@ -30,21 +27,26 @@ namespace HahnTestAppService.Services.Implementation
                 ManufacturerId = part.ManufacturerId,
                 ReservedQuantity = part.ReservedQuantity,
                 TotalQuantity = part.TotalQuantity,
-
+                PartTypeId = part.PartTypeId
             };
             await _partsRepo.Add(partDb);
+
+            partDb.partBrands = part.Brands.Select(x => new PartBrand() { PartId = partDb.Id, BrandId = x.BrandId }).ToList();
+            await _partsRepo.Update(partDb);
+
+            await _partsRepo.UnitOfWork.CommitAsync();
         }
 
         public async Task Delete(int id)
         {
             var part = _partsRepo.GetPart(id, CancellationToken.None);
             await _partsRepo.Remove(part);
+            await _partsRepo.UnitOfWork.CommitAsync();
         }
 
         public async Task<GetPartResponse> GetPart(int id, CancellationToken token)
         {
-            var part = await _partsRepo.GetPart(id, token, IncludeFromDb.IncludeAsString(IncludeFromDb.MANUFACTURER,IncludeFromDb.BRANDS));
-            var brands = await _brandsRepo.GetAllBrands(x => x.PartId == id, token);
+            var part = await _partsRepo.GetPart(id, token);
 
             return new GetPartResponse()
             {
@@ -53,16 +55,19 @@ namespace HahnTestAppService.Services.Implementation
                 ManufacturerName = part.Manufacturer.Name,
                 ValidTill = part.ValidTill,
                 IsAvailable = part.AVAILABLE_QUANTITY > 0,
-                BrandNames = brands.Select(x => x.Name).ToList(),
+                BrandNames = part.partBrands.Select(x => x.Brand.Name).ToList(),
                 MadeOn = part.MadeOn,
                 SerialNumber = part.SerialNumber,
-                Composition = part.Composition
+                Composition = part.Composition,
+                PartTypeName = part.PartType.Name,
+                
             };
         }
 
         public async Task<List<GetPartResponse>> GetParts(CancellationToken token)
         {
-            var parts = await _partsRepo.GetAllParts(token,IncludeFromDb.IncludeAsString(IncludeFromDb.MANUFACTURER,IncludeFromDb.BRANDS));
+            var parts = await _partsRepo.GetAllParts(token);
+
             return parts.Select(x => new GetPartResponse()
             {
                 Id = x.Id,
@@ -73,20 +78,25 @@ namespace HahnTestAppService.Services.Implementation
                 Composition = x.Composition,
                 SerialNumber = x.SerialNumber,
                 IsAvailable = x.AVAILABLE_QUANTITY > 0,
-                BrandNames = x.Brands.Select(x => x.Name).ToList(),
+                PartTypeName = x.PartType.Name,
+                BrandNames = x.partBrands.Select(x => x.Brand.Name).ToList()
 
             }).ToList();
         }
 
         public async Task ReservePart(ReservePartRequest part)
         {
+
             var partDb = await _partsRepo.GetPart(part.Id, CancellationToken.None);
+
+            if (part.Quantity > partDb.TotalQuantity) throw new Exception("Part not available!");
+
             partDb.TotalQuantity -= part.Quantity;
             partDb.ReservedQuantity += part.Quantity;
             await _partsRepo.Update(partDb);
         }
 
-        public async Task Update(AddUpdatePartRequest part)
+        public async Task Update(UpdatePartRequest part)
         {
             var partDb = new CarPart()
             {
@@ -98,8 +108,11 @@ namespace HahnTestAppService.Services.Implementation
                 ManufacturerId = part.ManufacturerId,
                 ReservedQuantity = part.ReservedQuantity,
                 TotalQuantity = part.TotalQuantity,
+                PartTypeId = part.PartTypeId,
             };
             await _partsRepo.Update(partDb);
+
+            await _partsRepo.UnitOfWork.CommitAsync();
         }
     }
 }

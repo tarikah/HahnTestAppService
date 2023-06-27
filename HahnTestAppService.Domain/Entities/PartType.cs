@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace HahnTestAppService.Domain.Entities
 {
-    public class Brand
+    public class PartType
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<PartBrand> partBrands { get; set; }
-
-
+        public List<CarPart> Parts { get; set; }
     }
 }

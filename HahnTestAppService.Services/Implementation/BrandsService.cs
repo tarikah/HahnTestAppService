@@ -14,7 +14,7 @@ namespace HahnTestAppService.Services.Implementation
             _brandsRepository = brandsRepository;
         }
 
-        public async Task Add(AddUpdateBrandRequest brand)
+        public async Task Add(UpdateBrandRequest brand)
         {
             var brandDb = new Brand() { Name = brand.Name };
             await _brandsRepository.Add(brandDb);
@@ -37,7 +37,7 @@ namespace HahnTestAppService.Services.Implementation
             }).ToList();
         }
 
-        public async Task Update(AddUpdateBrandRequest part)
+        public async Task Update(UpdateBrandRequest part)
         {
             var brand = await _brandsRepository.GetBrand((int)part.Id, CancellationToken.None);
             brand.Name = part.Name;

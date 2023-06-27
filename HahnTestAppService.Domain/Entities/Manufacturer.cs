@@ -10,7 +10,6 @@ namespace HahnTestAppService.Domain.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public CarPart Part { get; set; }
-        public int PartId { get; set; }
+        public List<CarPart> Part { get; set; }
     }
 }

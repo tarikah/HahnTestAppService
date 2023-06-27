@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HahnTestAppService.Contracts\HahnTestAppService.Contracts.csproj" />
+    <ProjectReference Include="..\HahnTestAppService.DI\HahnTestAppService.DI.csproj" />
     <ProjectReference Include="..\HahnTestAppService.Repository\HahnTestAppService.Repository.csproj" />
     <ProjectReference Include="..\HahnTestAppService.Services\HahnTestAppService.Services.csproj" />
   </ItemGroup>

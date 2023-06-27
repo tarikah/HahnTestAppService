@@ -12,7 +12,7 @@ namespace HahnTestAppService.Repository.Concretes
 {
     public class BaseRepository<TContext> : IRepository where TContext : DbContext
     {
-        protected BaseRepository(TContext dbContext, IUnitOfWork unitOfWork = null)
+        public BaseRepository(TContext dbContext, IUnitOfWork unitOfWork = null)
         {
             DbContext = dbContext;
             UnitOfWork = unitOfWork ?? new DbContextUnitOfWork(dbContext);
@@ -23,10 +23,9 @@ namespace HahnTestAppService.Repository.Concretes
 
         public IUnitOfWork UnitOfWork { get; private set; }
 
-        public async Task Add<T>(T entity)
+        public async Task Add<T>(T entity) where T : class 
         {
            DbContext.Add(entity);
-           await UnitOfWork.CommitAsync();
         }
 
         public IQueryable<T> GetWithExpression<T>(Func<T,bool> expression) where T : class
@@ -34,16 +33,14 @@ namespace HahnTestAppService.Repository.Concretes
             return DbContext.Set<T>().Where(expression).AsQueryable();
         }
 
-        public async Task Remove<T>(T entity)
+        public async Task Remove<T>(T entity) where T : class
         {
             DbContext.Remove(entity);
-            await UnitOfWork.CommitAsync();
         }
 
-        public async Task Update<T>(T entity)
+        public async Task Update<T>(T entity) where T : class
         {
             DbContext.Update(entity);
-            await UnitOfWork.CommitAsync();
         }
     }
 }

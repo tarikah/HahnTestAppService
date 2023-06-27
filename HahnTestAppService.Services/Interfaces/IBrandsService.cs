@@ -10,8 +10,8 @@ namespace HahnTestAppService.Services.Interfaces
     public interface IBrandsService
     {
         Task<List<GetBrandsRequest>> GetBrands(CancellationToken token);
-        Task Add(AddUpdateBrandRequest brand);
+        Task Add(UpdateBrandRequest brand);
         Task Delete(int id);
-        Task Update(AddUpdateBrandRequest part);
+        Task Update(UpdateBrandRequest part);
     }
 }

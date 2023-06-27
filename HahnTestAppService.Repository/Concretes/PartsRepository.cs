@@ -8,17 +8,22 @@ namespace HahnTestAppService.Repository.Concretes
 {
     public class PartsRepository : BaseRepository<ApplicationDbContext>, IPartsRepository
     {
-        protected PartsRepository(ApplicationDbContext dbContext, IUnitOfWork unitOfWork = null) : base(dbContext, unitOfWork)
+        public PartsRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
 
         public async Task<IEnumerable<CarPart>> GetAllParts(CancellationToken token,string includes = "")
         {
-            return await DbContext.Parts.Include(includes).ToListAsync(token);
+            return await DbContext.Parts
+                .Include(x=>x.Manufacturer)
+                .Include(x=>x.PartType)
+                .Include(x=>x.partBrands)
+                .ToListAsync(token);
         }
 
         public async Task<IEnumerable<CarPart>> GetAllParts(Expression<Func<CarPart, bool>> filter, CancellationToken token)
         {
+           
             var parts = DbContext.Parts.Where(filter).AsQueryable();
             return await parts.ToListAsync(token);
 
@@ -31,7 +36,11 @@ namespace HahnTestAppService.Repository.Concretes
 
         public async Task<CarPart> GetPart(int id, CancellationToken token,string includes = "")
         {
-            return await DbContext.Parts.Include(includes).FirstOrDefaultAsync(x => x.Id == id, token);
+            return await DbContext.Parts
+                .Include(x => x.Manufacturer)
+                .Include(x => x.PartType)
+                .Include(x => x.partBrands).ThenInclude(x=>x.Brand)
+                .FirstOrDefaultAsync(x => x.Id == id, token);
         }
 
 

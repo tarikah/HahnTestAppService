@@ -8,6 +8,6 @@ namespace HahnTestAppService.Contracts.DTOs
 {
     public class BrandModel
     {
-
+        public int BrandId { get; set; }
     }
 }
