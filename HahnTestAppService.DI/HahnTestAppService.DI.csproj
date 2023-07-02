@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HahnTestAppService.Contracts\HahnTestAppService.Contracts.csproj" />
-    <ProjectReference Include="..\HahnTestAppService.Repository\HahnTestAppService.Repository.csproj" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HahnTestAppService.Services\HahnTestAppService.Services.csproj" />
   </ItemGroup>
 
 </Project>
