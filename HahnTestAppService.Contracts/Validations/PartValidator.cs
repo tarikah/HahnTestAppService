@@ -13,7 +13,7 @@ namespace HahnTestAppService.Contracts.Validations
             RuleFor(x => x.SerialNumber).NotEmpty().NotNull().MaximumLength(10);
             RuleFor(x => x.ManufacturerId).NotEmpty().NotNull();
             RuleFor(x => x.PartTypeId).NotEmpty().NotNull();
-            RuleFor(x => x.TotalQuantity).NotEmpty().NotNull();
+            RuleFor(x => x.TotalQuantity).NotEmpty().NotNull().GreaterThan(0);
         }
     }
     public class AddPartValidator : AbstractValidator<AddPartRequest>
@@ -25,7 +25,7 @@ namespace HahnTestAppService.Contracts.Validations
             RuleFor(x => x.SerialNumber).NotEmpty().NotNull().MaximumLength(10);
             RuleFor(x => x.ManufacturerId).NotEmpty().NotNull();
             RuleFor(x => x.PartTypeId).NotEmpty().NotNull();
-            RuleFor(x => x.TotalQuantity).NotEmpty().NotNull();
+            RuleFor(x => x.TotalQuantity).NotEmpty().NotNull().GreaterThan(0);
         }
     }
 }

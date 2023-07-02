@@ -1,5 +1,4 @@
-﻿using HahnTestAppService.Contracts.Helpers;
-using HahnTestAppService.Contracts.Request;
+﻿using HahnTestAppService.Contracts.Request;
 using HahnTestAppService.Contracts.Response;
 using HahnTestAppService.Domain.Entities;
 using HahnTestAppService.Repository.Interfaces;
@@ -10,9 +9,14 @@ namespace HahnTestAppService.Services.Implementation
     public class PartsService : IPartsService
     {
         private readonly IPartsRepository _partsRepo;
-        public PartsService(IPartsRepository partsRepo)
+        private readonly IBrandsRepository _brandsRepo;
+        private readonly IManufacturerRepository _manufacturerRepo;
+
+        public PartsService(IPartsRepository partsRepo, IBrandsRepository brandsRepo, IManufacturerRepository manufacturerRepo)
         {
             _partsRepo = partsRepo;
+            _brandsRepo = brandsRepo;
+            _manufacturerRepo = manufacturerRepo;
         }
 
         public async Task Add(AddPartRequest part)
@@ -22,15 +26,17 @@ namespace HahnTestAppService.Services.Implementation
                 Name = part.Name,
                 Composition = part.Composition,
                 SerialNumber = part.SerialNumber,
-                MadeOn = part.MadeOn,
-                ValidTill = part.MadeOn.AddYears(10),
-                ManufacturerId = part.ManufacturerId,
+                MadeOn = DateTime.Now,
+                ValidTill = DateTime.Now.AddYears(10),
+                ManufacturerId = Convert.ToInt32(part.ManufacturerId),
                 TotalQuantity = part.TotalQuantity,
-                PartTypeId = part.PartTypeId
+                PartTypeId = Convert.ToInt32(part.PartTypeId)
             };
             await _partsRepo.Add(partDb);
 
-            partDb.partBrands = part.Brands.Select(x => new PartBrand() { PartId = partDb.Id, BrandId = x.BrandId }).ToList();
+            await _partsRepo.UnitOfWork.CommitAsync();
+
+            partDb.partBrands = part.Brands.Select(x => new PartBrand() { PartId = partDb.Id, BrandId = Convert.ToInt32(x) }).ToList();
             await _partsRepo.Update(partDb);
 
             await _partsRepo.UnitOfWork.CommitAsync();
@@ -38,9 +44,20 @@ namespace HahnTestAppService.Services.Implementation
 
         public async Task Delete(int id)
         {
-            var part = _partsRepo.GetPart(id, CancellationToken.None);
+            var part = await _partsRepo.GetPart(id, CancellationToken.None);
             await _partsRepo.Remove(part);
             await _partsRepo.UnitOfWork.CommitAsync();
+        }
+
+        public async Task<GetDataForAddUpdateFormResponse> GetFormData()
+        {
+            var brands = await _brandsRepo.GetAllBrands(CancellationToken.None);
+            var manufacturers = await _manufacturerRepo.GetAllManufacturers(CancellationToken.None);
+            return new GetDataForAddUpdateFormResponse()
+            {
+                Brands = brands.Select(x => new FormData { Id = x.Id, Name = x.Name }).ToList(),
+                Manufacturers = manufacturers.Select(x => new FormData { Id = x.Id, Name = x.Name }).ToList(),
+            };
         }
 
         public async Task<GetPartResponse> GetPart(int id, CancellationToken token)
@@ -59,7 +76,25 @@ namespace HahnTestAppService.Services.Implementation
                 SerialNumber = part.SerialNumber,
                 Composition = part.Composition,
                 PartTypeName = part.PartType.Name,
-                
+
+            };
+        }
+
+        public async Task<GetPartFormResponse> GetPartForm(int id)
+        {
+            var part = await _partsRepo.GetPart(id, CancellationToken.None);
+
+            return new GetPartFormResponse()
+            {
+                Id = part.Id,
+                Name = part.Name,
+                ManufacturerId = part.Manufacturer.Id,
+                Brands = part.partBrands.Where(x => x.PartId == id).Select(x => x.Brand.Id).ToList(),
+                SerialNumber = part.SerialNumber,
+                Composition = part.Composition,
+                PartTypeId = part.PartType.Id,
+                TotalQuantity = part.TotalQuantity,
+
             };
         }
 

@@ -17,7 +17,8 @@ namespace HahnTestAppService.Repository.Concretes
             return await DbContext.Parts
                 .Include(x=>x.Manufacturer)
                 .Include(x=>x.PartType)
-                .Include(x=>x.partBrands)
+                .Include(x => x.partBrands)
+                .ThenInclude(x=>x.Brand)
                 .ToListAsync(token);
         }
 
@@ -39,7 +40,8 @@ namespace HahnTestAppService.Repository.Concretes
             return await DbContext.Parts
                 .Include(x => x.Manufacturer)
                 .Include(x => x.PartType)
-                .Include(x => x.partBrands).ThenInclude(x=>x.Brand)
+                .Include(x => x.partBrands)
+                .ThenInclude(x=>x.Brand)
                 .FirstOrDefaultAsync(x => x.Id == id, token);
         }
 

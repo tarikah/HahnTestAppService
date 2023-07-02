@@ -26,8 +26,13 @@ namespace HahnTestAppService.Web.Controllers
         {
             return Ok(await _partsService.GetPart(id,CancellationToken.None));
         }
+        [HttpGet("form-data/{id}")]
+        public async Task<ActionResult<GetPartFormResponse>> GetPartForm(int id)
+        {
+            return Ok(await _partsService.GetPartForm(id));
+        }
         [HttpPost]
-        public async Task<ActionResult> Add(AddPartRequest request)
+        public async Task<ActionResult> Add([FromBody]AddPartRequest request)
         {
             await _partsService.Add(request);
             return Ok();
@@ -37,6 +42,17 @@ namespace HahnTestAppService.Web.Controllers
         {
             await _partsService.Update(request);
             return Ok();
+        }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Remove(int id)
+        {
+            await _partsService.Delete(id);
+            return Ok();
+        }
+        [HttpGet("form-data")]
+        public async Task<ActionResult<GetDataForAddUpdateFormResponse>> GetFormData()
+        {
+            return Ok(await _partsService.GetFormData());
         }
     }
 }

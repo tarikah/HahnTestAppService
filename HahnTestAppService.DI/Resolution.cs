@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using HahnTestAppService.Contracts.Validations;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +16,10 @@ namespace HahnTestAppService.DI
         {
             services.RegisterRepos();
             services.RegisterServices();
+
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssemblyContaining<AddPartValidator>();
+            services.AddValidatorsFromAssemblyContaining<UpdatePartValidator>();
             return services;
         }
     }

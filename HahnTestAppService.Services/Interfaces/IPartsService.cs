@@ -16,5 +16,7 @@ namespace HahnTestAppService.Services.Interfaces
         Task Delete(int id); 
         Task Update(UpdatePartRequest part); 
         Task ReservePart(ReservePartRequest part); 
+        Task<GetDataForAddUpdateFormResponse> GetFormData(); 
+        Task<GetPartFormResponse> GetPartForm(int id); 
     }
 }
